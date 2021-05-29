@@ -1,0 +1,16 @@
+{
+  "name": "aruaruApi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "git@github.com:ryo-n-cell/aruaruappAPI.git",
+  "author": "ryo-n-cell <nakamuraryota582@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  }
+}
