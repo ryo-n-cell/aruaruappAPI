@@ -54,7 +54,7 @@ var jsonData = {
 //   res.json(jsonData);
 // });
 
-app.get("/user/:userId", function (req, res, next) {
+app.get("/", function (req, res, next) {
   res.json(jsonData);
 });
 
