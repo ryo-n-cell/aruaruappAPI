@@ -1,5 +1,8 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
+
+app.use(cors());
 
 var jsonData = {
   key: [
@@ -47,7 +50,11 @@ var jsonData = {
   ],
 };
 
-app.get("/", (req, res) => {
+// app.get("/", (req, res) => {
+//   res.json(jsonData);
+// });
+
+app.get("/user/:userId", function (req, res, next) {
   res.json(jsonData);
 });
 
