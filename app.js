@@ -1,70 +1,63 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-const cors = require("cors");
 
+const cors = require("cors");
 app.use(cors());
 
-var jsonData = {
-  key: [
-    {
-      id: 1,
-      question: "ほぼ100%の(ほぼ)にピクッとなる",
-    },
-    {
-      id: 2,
-      question: "コンパイルを実行する時のエンターキーだけなんか強打しちゃう",
-    },
-    {
-      id: 3,
-      question: "手作業で30分掛かるものを3秒で終わらせるために3時間掛ける",
-    },
-    {
-      id: 4,
-      question:
-        "大規模なサービスで障害が置きていると、妙な親近感とワクワクを感じる",
-    },
-    {
-      id: 5,
-      question: "コードを打ち込む時間より調べている時間のほうが長い",
-    },
-    {
-      id: 6,
-      question: "ソースコードに記述するコメントに性格が出る",
-    },
-    {
-      id: 7,
-      question: "帰ろうとするとトラブルが発生する",
-    },
-    {
-      id: 8,
-      question: "キーボードやマウスにはこだわるほうだ",
-    },
-    {
-      id: 9,
-      question: "パソコンのことは何でも知っていると思われてる",
-    },
-    {
-      id: 10,
-      question: "PCが調子悪かったら「とりあえず再起動」",
-    },
-  ],
-};
+const mysql = require("mysql");
 
-// app.get("/", (req, res) => {
-//   res.json(jsonData);
-// });
-
-app.get("/", function (req, res, next) {
-  res.json(jsonData);
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB,
 });
 
-app.listen(process.env.PORT || 5000);
+// 接続自体のエラーハンドリング
+connection.connect((err) => {
+  if (err) {
+    console.log("error connecting: " + err.stack);
+    return;
+  }
+  console.log("success");
+});
 
-console.log("env");
-// herokuにこのアプリをデプロイしてAPIを見る
-// const connection = mysql.createConnection({
-//   host: "サーバ名",
-//   user: "ユーザー名",
-//   password: "パスワード",
-//   database: "データベース"
-// });
+// DBへ接続
+app.get("/", (req, res) => {
+  connection.query(
+    "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
+    (error, results) => {
+      let test = makeQuestion(results);
+      // console.log(res);
+      app.get;
+      res.send(test);
+    }
+  );
+});
+
+// ランダマイズされたJSONデータが帰ってくる関数
+function makeQuestion(fullData) {
+  const maxDataLength = fullData.length;
+  let outputData = [];
+  // maxDataLength-1を最大とし0~最大数の重複なしの配列を10つ出す
+  let existNumber = [];
+  do {
+    let tmp = intRandom(0, maxDataLength - 1);
+    if (!existNumber.includes(tmp)) {
+      existNumber.push(tmp);
+    }
+  } while (existNumber.length !== 9);
+  // existNumberを添え字としてfullDataオブジェクトを10こ取り出す
+  for (let i = 0; existNumber.length - 1 >= i; i++) {
+    let tmpData = fullData[existNumber[i]];
+    outputData.push(tmpData);
+  }
+  return JSON.stringify(outputData);
+
+  function intRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+}
+
+app.listen(process.env.PORT || 5000);
