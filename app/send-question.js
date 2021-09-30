@@ -28,10 +28,10 @@ app.get("/", (req, res) => {
   connection.query(
     "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
     (error, results) => {
-      let test = makeQuestion(results);
+      let sendData = makeQuestion(results);
       // console.log(res);
       app.get;
-      res.send(test);
+      res.send(sendData);
     }
   );
 });
@@ -47,7 +47,7 @@ function makeQuestion(fullData) {
     if (!existNumber.includes(tmp)) {
       existNumber.push(tmp);
     }
-  } while (existNumber.length !== 9);
+  } while (existNumber.length !== 10);
   // existNumberを添え字としてfullDataオブジェクトを10こ取り出す
   for (let i = 0; existNumber.length - 1 >= i; i++) {
     let tmpData = fullData[existNumber[i]];
