@@ -24,17 +24,17 @@ connection.connect((err) => {
 });
 
 // DBへ接続
-app.get("/", (req, res) => {
-  connection.query(
-    "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
-    (error, results) => {
-      let sendData = makeQuestion(results);
-      // console.log(res);
-      app.get;
-      res.send(sendData);
+connection.query(
+  "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
+  (error, results) => {
+    if (error) {
+      console.log("error connecting: " + error.stack);
+      return;
     }
-  );
-});
+    const sendData = makeQuestion(results);
+    exports.sendData = sendData;
+  }
+);
 
 // ランダマイズされたJSONデータが帰ってくる関数
 function makeQuestion(fullData) {
@@ -59,5 +59,3 @@ function makeQuestion(fullData) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
-
-app.listen(process.env.PORT || 5000);
