@@ -6,39 +6,34 @@ const cors = require("cors");
 app.use(cors());
 
 const mysql = require("mysql");
-const connection = mysql.createConnection({
+
+const db_config = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB,
-});
+};
 
-// 接続自体のエラーハンドリング
-connection.connect((err) => {
-  if (err) {
-    console.log("error connecting: " + err.stack);
-    return;
-  }
-  console.log("success");
-});
+function handleDisconnect() {
+  console.log('INFO.CONNECTION_DB: ');
+  connection = mysql.createConnection(db_config);
+  //connection取得
+  connection.connect(function(err) {
+      if (err) {
+          console.log('ERROR.CONNECTION_DB: ', err);
+          setTimeout(handleDisconnect, 1000);
+      }
+  });
+  connection.on('error', function(err) {
+      console.log('ERROR.DB: ', err);
+      if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+          console.log('ERROR.CONNECTION_LOST: ', err);
+          handleDisconnect();
+      } else {
+          throw err;
+      }
+  });
+}
 
-// const testData = {
-//   id: 4,
-//   question_id: 4,
-//   category_id: 4,
-//   status: true,
-//   create_at: Date.now(),
-// };
+handleDisconnect();
 
-// connection.query(
-//   `insert into heroku_5d14dd59fe74ea5.status_count values (${testData.id}, ${testData.question_id}, ${testData.category_id},${testData.status},${testData.create_at});`,
-//   (error, results) => {
-//     if (error) throw error;
-//     console.log(results);
-//   }
-// );
-
-// DBへ接続
-// app.post("/", (req, res) => {
-
-// });

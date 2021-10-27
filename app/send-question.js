@@ -7,34 +7,49 @@ app.use(cors());
 
 const mysql = require("mysql");
 
-const connection = mysql.createConnection({
+const db_config = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB,
-});
+};
 
-// 接続自体のエラーハンドリング
-connection.connect((err) => {
-  if (err) {
-    console.log("error connecting: " + err.stack);
-    return;
-  }
-  console.log("success");
-});
+function handleDisconnect() {
+  console.log('INFO.CONNECTION_DB: ');
+  connection = mysql.createConnection(db_config);
+  //connection取得
+  connection.connect(function(err) {
+      if (err) {
+          console.log('ERROR.CONNECTION_DB: ', err);
+          setTimeout(handleDisconnect, 1000);
+      }
+  });
+  connection.on('error', function(err) {
+      console.log('ERROR.DB: ', err);
+      if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+          console.log('ERROR.CONNECTION_LOST: ', err);
+          handleDisconnect();
+      } else {
+          throw err;
+      }
+  });
+}
+handleDisconnect();
 
 // DBへ接続
-connection.query(
-  "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
-  (error, results) => {
-    if (error) {
-      console.log("error connecting: " + error.stack);
-      return;
+function conect(){
+  connection.query(
+    "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
+    (error, results) => {
+      if (error) {
+        console.log("error connecting: " + error.stack);
+        return;
+      }
+      exports.sendData = makeQuestion(results);
     }
-    const sendData = makeQuestion(results);
-    exports.sendData = sendData;
-  }
-);
+  );
+}
+conect()
 
 // ランダマイズされたJSONデータが帰ってくる関数
 function makeQuestion(fullData) {
@@ -53,7 +68,7 @@ function makeQuestion(fullData) {
     let tmpData = fullData[existNumber[i]];
     outputData.push(tmpData);
   }
-  return JSON.stringify(outputData);
+  return outputData;
 
   function intRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
