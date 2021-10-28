@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 
-const mysql = require("mysql");
+const mysql = require("mysql2");
 
 const db_config = {
   host: process.env.DB_HOST,
@@ -34,10 +34,10 @@ function handleDisconnect() {
       }
   });
 }
-handleDisconnect();
+// handleDisconnect()
 
 // DBへ接続
-function conect(){
+function connect(){
   connection.query(
     "SELECT * FROM heroku_5d14dd59fe74ea5.question_table;",
     (error, results) => {
@@ -45,11 +45,11 @@ function conect(){
         console.log("error connecting: " + error.stack);
         return;
       }
-      exports.sendData = makeQuestion(results);
+      module.exports =  makeQuestion(results);
     }
   );
 }
-conect()
+// connect()
 
 // ランダマイズされたJSONデータが帰ってくる関数
 function makeQuestion(fullData) {
@@ -69,8 +69,23 @@ function makeQuestion(fullData) {
     outputData.push(tmpData);
   }
   return outputData;
-
   function intRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
+
+
+function promisDb(){
+  return new Promise((resolve,reject)=>
+  setTimeout(()=>{
+    try {
+      handleDisconnect()
+      resolve(exports.sendData = connect())
+    }catch(err){
+      reject(err)
+    }
+  },1000)
+  )
+}
+
+promisDb()
