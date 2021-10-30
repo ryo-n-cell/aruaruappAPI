@@ -17,30 +17,30 @@ const dbConnection = mysql.createConnection({
 // mySQLは一定時間接続するとPROTOCOL_CONNECTION_LOSTするのでそれを防ぐためのポーリングコードを書く
 dbConnection.connect((error) => {
   if (error) {
-      console.error('Database Connect Error:' + error);
-      return;
+    console.error("Database Connect Error:" + error);
+    return;
   } else {
-      console.log('Database Connection Success: id=' + dbConnection.threadId);
+    console.log("Database Connection Success: id=" + dbConnection.threadId);
   }
 });
 
-const getData = require("./app/getData")
+const getData = require("./app/getData");
 app.get("/", (req, res, next) => {
-  try{
+  try {
     if (!req.query.completed) {
-      return getData(res)
+      return getData(res);
     }
-  }catch(err){
+  } catch (err) {
     err.statusCode = 400;
     return next(err);
   }
 });
 
-const sendResult = require("./app/sendResult")
+const sendResult = require("./app/sendResult");
 app.post("/", (req, res, next) => {
-  try{
-    return sendResult(req,res);
-  }catch(error){
+  try {
+    return sendResult(req, res);
+  } catch (error) {
     const err = new Error("Reqest body is not JSON");
     err.statusCode = 400;
     return next(err);
@@ -49,7 +49,7 @@ app.post("/", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Internal Server Error');
+  res.status(500).send("Internal Server Error");
 });
 
 app.listen(process.env.PORT || 5000);
