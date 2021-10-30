@@ -1,8 +1,2 @@
-delayedAlert()
 
-function delayedAlert() {
-  setTimeout(() => {
-    console.log("Test")
-  }, 3000);
-  console.log("HAHAHAHA")
-}
+// curl http://localhost:5000 -X POST -H "Contion/json" -d '{"name":"鈴木一郎", "age":55}'
