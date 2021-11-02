@@ -1,27 +1,24 @@
 const res = require("../app");
 const mysql = require("mysql2");
-
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB,
-});
+const pool = require("../dbController/pool");
 
 function sendResult(req, res) {
   const reqData = JSON.parse(JSON.stringify(req.body));
-  connection.query("select count (*) from status_count;", (error, results) => {
-    if (error) {
-      console.log("error connecting: " + error.stack);
-      return;
-    }
-    const addId = results[0]["count (*)"] + 1;
-    insertQuery(reqData, addId);
-  });
+  pool.getConnection(function(err,connection){
+    connection.query("select count (*) from status_count;", (error, results) => {
+      if (error) {
+        console.log("error connecting: " + error.stack);
+        return;
+      }
+      const addId = results[0]["count (*)"] + 1;
+      insertQuery(reqData, addId,connection);
+      connection.release();
+    });
+  })
   return res.status(201);
 }
 
-function insertQuery(reqData, addId) {
+function insertQuery(reqData, addId,connection) {
   let insertObj = {
     idArray: [],
     questionArray: [],
