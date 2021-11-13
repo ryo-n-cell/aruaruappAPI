@@ -1,12 +1,6 @@
 const res = require("../app");
 const mysql = require("mysql2");
-
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB,
-});
+const pool = require("../dbController/pool");
 
 function sendResult(req, res) {
   const reqData = JSON.parse(JSON.stringify(req.body));
@@ -22,7 +16,7 @@ function sendResult(req, res) {
   return res.status(201);
 }
 
-function insertQuery(reqData, addId) {
+function insertQuery(reqData, addId,connection) {
   let insertObj = {
     idArray: [],
     questionArray: [],

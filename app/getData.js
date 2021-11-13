@@ -1,26 +1,23 @@
 const res = require("../app")
 const mysql = require("mysql2");
-
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB,
-});
+const pool = require("../dbController/pool");
 
 function getData(res){
-  connection.query(
-    "SELECT * FROM question_table;",
-    (error, results) => {
-      if (error) {
-        console.log("error connecting: " + error.stack);
-        return;
+  pool.getConnection(function(err,connection){
+    pool.query(
+      "SELECT * FROM question_table;",
+      (error, results) => {
+        if (error) {
+          console.log("error connecting: " + error.stack);
+          return;
+        }
+        const data =  makeQuestions(results);
+        res.header({'Content-Type': 'application/json'});
+        connection.release();
+        return res.json(data);
       }
-      const data =  makeQuestions(results);
-      res.header({'Content-Type': 'application/json'});
-      return res.json(data);
-    }
-  );
+    );
+  })
 }
 
 function makeQuestions(fullData) {
