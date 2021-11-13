@@ -1,26 +1,23 @@
-const res = require("../app")
+const res = require("../app");
 const mysql = require("mysql2");
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB,
 });
 
-function getData(res){
-  connection.query(
-    "SELECT * FROM question_table;",
-    (error, results) => {
-      if (error) {
-        console.log("error connecting: " + error.stack);
-        return;
-      }
-      const data =  makeQuestions(results);
-      res.header({'Content-Type': 'application/json'});
-      return res.json(data);
+function getData(res) {
+  pool.query("SELECT * FROM question_table;", (error, results) => {
+    if (error) {
+      console.log("error connecting: " + error.stack);
+      return;
     }
-  );
+    const data = makeQuestions(results);
+    res.header({ "Content-Type": "application/json" });
+    return res.json(data);
+  });
 }
 
 function makeQuestions(fullData) {
@@ -44,4 +41,4 @@ function makeQuestions(fullData) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
-module.exports = getData
+module.exports = getData;

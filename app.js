@@ -7,20 +7,19 @@ app.use(cors());
 
 const mysql = require("mysql2");
 require("dotenv").config();
-const dbConnection = mysql.createConnection({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB,
 });
 
-// mySQLは一定時間接続するとPROTOCOL_CONNECTION_LOSTするのでそれを防ぐためのポーリングコードを書く
-dbConnection.connect((error) => {
+pool.getConnection((error) => {
   if (error) {
     console.error("Database Connect Error:" + error);
     return;
   } else {
-    console.log("Database Connection Success: id=" + dbConnection.threadId);
+    console.log("Database Connection Success");
   }
 });
 
