@@ -1,28 +1,9 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-
+const mysql = require("mysql2");
 const cors = require("cors");
 app.use(cors());
-
-const mysql = require("mysql2");
-require("dotenv").config();
-const dbConnection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB,
-});
-
-// mySQLは一定時間接続するとPROTOCOL_CONNECTION_LOSTするのでそれを防ぐためのポーリングコードを書く
-dbConnection.connect((error) => {
-  if (error) {
-    console.error("Database Connect Error:" + error);
-    return;
-  } else {
-    console.log("Database Connection Success: id=" + dbConnection.threadId);
-  }
-});
 
 const getData = require("./app/getData");
 app.get("/", (req, res, next) => {

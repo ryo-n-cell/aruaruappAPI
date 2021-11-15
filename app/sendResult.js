@@ -1,12 +1,6 @@
 const res = require("../app");
 const mysql = require("mysql2");
-
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB,
-});
+const pool = require("../dbController/pool");
 
 function sendResult(req, res) {
   const reqData = JSON.parse(JSON.stringify(req.body));
@@ -18,10 +12,11 @@ function sendResult(req, res) {
     const addId = results[0]["count (*)"] + 1;
     insertQuery(reqData, addId);
   });
+  console.log("res");
   return res.status(201);
 }
 
-function insertQuery(reqData, addId) {
+function insertQuery(reqData, addId,connection) {
   let insertObj = {
     idArray: [],
     questionArray: [],
@@ -36,7 +31,6 @@ function insertQuery(reqData, addId) {
     insertObj.categoryArray.push(reqData[reqDataCount_i].category_id);
     insertObj.statusArray.push(reqData[reqDataCount_i].status);
   }
-  console.log(insertObj);
   connection.query(
     //ORMを使用してクエリを綺麗にすること (https://scrapbox.io/uki00a/Node.js%E3%81%AEORM%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
     `INSERT INTO status_count(id,question_id,category_id,status,Created_at) VALUES 
