@@ -6,7 +6,7 @@ const cors = require("cors");
 app.use(cors());
 
 const getData = require("./app/getData");
-app.get("/", (req, res, next) => {
+app.get("/getData", (req, res, next) => {
   try {
     if (!req.query.completed) {
       return getData(res);
@@ -18,7 +18,7 @@ app.get("/", (req, res, next) => {
 });
 
 const sendResult = require("./app/sendResult");
-app.post("/", (req, res, next) => {
+app.post("/sendResult", (req, res, next) => {
   try {
     return sendResult(req, res);
   } catch (error) {
