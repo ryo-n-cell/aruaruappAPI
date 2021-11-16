@@ -22,7 +22,7 @@ app.post("/sendResult", (req, res, next) => {
   try {
     return sendResult(req, res);
   } catch (error) {
-    console.log(error)
+    console.error(error)
     const err = new Error("Reqest body is not JSON");
     err.statusCode = 400;
     return next(err);
