@@ -35,7 +35,6 @@ function insertQuery(reqData, addId,connection) {
   }
   console.log(insertObj);
   connection.query(
-    //ORMを使用してクエリを綺麗にすること (https://scrapbox.io/uki00a/Node.js%E3%81%AEORM%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
     `INSERT INTO status_count(id,question_id,category_id,status,Created_at) VALUES 
     (${insertObj.idArray[0]},${insertObj.questionArray[0]},${insertObj.categoryArray[0]},${insertObj.statusArray[0]},${insertObj.createat}),
     (${insertObj.idArray[1]},${insertObj.questionArray[1]},${insertObj.categoryArray[1]},${insertObj.statusArray[1]},${insertObj.createat}),
