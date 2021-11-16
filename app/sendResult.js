@@ -15,7 +15,8 @@ function sendResult(req, res) {
       connection.release();
     });
   })
-  return res.status(201);
+  res.status(201);
+  return res.send
 }
 
 function insertQuery(reqData, addId,connection) {
@@ -33,7 +34,6 @@ function insertQuery(reqData, addId,connection) {
     insertObj.categoryArray.push(reqData[reqDataCount_i].category_id);
     insertObj.statusArray.push(reqData[reqDataCount_i].status);
   }
-  console.log(insertObj);
   connection.query(
     `INSERT INTO status_count(id,question_id,category_id,status,Created_at) VALUES 
     (${insertObj.idArray[0]},${insertObj.questionArray[0]},${insertObj.categoryArray[0]},${insertObj.statusArray[0]},${insertObj.createat}),
