@@ -16,7 +16,8 @@ function sendResult(req, res) {
     });
   })
   res.status(201);
-  return res.send
+  res.send("POST OK")
+  return
 }
 
 function insertQuery(reqData, addId,connection) {
