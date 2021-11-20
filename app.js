@@ -29,6 +29,18 @@ app.post("/sendResult", (req, res, next) => {
   }
 });
 
+const resultsSoFar = require("./app/resultsSoFar");
+app.get("/resultsSoFar", (req, res, next) => {
+  try {
+    if (!req.query.completed) {
+      return resultsSoFar(req,res);
+    }
+  } catch (err) {
+    err.statusCode = 400;
+    return next(err);
+  }
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Internal Server Error");
