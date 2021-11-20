@@ -1,13 +1,13 @@
-const res = require("../app")
+const res = require("../app");
 const mysql = require("mysql2");
 const pool = require("../dbController/pool");
-const returnQIdCalc=[]
+const returnQIdCalc = [];
 
-async function resultsSoFar(req,res){
-  const qIdArray=req.query.qId;
-  pool.getConnection(function(err,connection){
+async function resultsSoFar(req, res) {
+  const qIdArray = req.query.qid;
+  pool.getConnection(function (err, connection) {
     pool.query(
-     `SELECT * FROM status_count WHERE question_id IN(
+      `SELECT * FROM status_count WHERE question_id IN(
       ${qIdArray[0]},
       ${qIdArray[1]},
       ${qIdArray[2]},
@@ -24,32 +24,51 @@ async function resultsSoFar(req,res){
           console.log("error connecting: " + error.stack);
           return;
         }
-        const dbData = results
-        dbData.sort(function(a,b){
-          if(a.question_id<b.question_id) return -1;
-          if(a.question_id > b.question_id) return 1;
+        const dbData = results;
+        dbData.sort(function (a, b) {
+          if (a.question_id < b.question_id) return -1;
+          if (a.question_id > b.question_id) return 1;
           return 0;
-      });
-        for(let qId_i = 0;qId_i <= 9;qId_i++){
-          // let filterRecord = dbData.filter(qId => qId.question_id === qIdArray[qId_i]);
-          // console.log(dbData)
-          console.log(dbData.lastIndexOf(qIdArray[qId_i]));
+        });
+        // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+        const question_idsArray = [];
+        dbData.forEach((dbData) => {
+          question_idsArray.push(dbData.question_id);
+        });
+        const untilResultArray = [];
+        // ソートした配列をquestionIDごとの配列としてまとめてuntilResultArrayへ代入する
+        // question_idsArrayはquestionIDのみを入れた配列
+        for (let qId_i = 0; qId_i <= 9; qId_i++) {
+          qid_length = question_idsArray.lastIndexOf(Number(qIdArray[qId_i]));
+          console.log(qid_length);
+          let arrayById = [];
+          for (
+            let qid_length_n = 0;
+            qid_length_n <= qid_length;
+            qid_length_n++
+          ) {
+            arrayById.push(dbData[qid_length_n]);
+          }
+          untilResultArray.push(arrayById);
+          question_idsArray.splice(0, qid_length + 1);
+          dbData.splice(0, qid_length + 1);
         }
+        // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+        // qid配列ごとにtrue/qidごとの配列の母数とBoolean
         connection.release();
-        return res.send(dbData);
+        return res.send(untilResultArray);
       }
     );
-  })
+  });
 }
 
-function resultsCalc(qId){
+function resultsCalc(qId) {
   // let resultObj={};
 }
 
-module.exports = resultsSoFar
+module.exports = resultsSoFar;
 
 // 配列1000個あるもの（result）に対してquestion_idに合致したオブジェクトの配列を作りたい。
-// 例：resultから合致する配列要素を変数filterRecordに加える。合致したresultの配列要素はその時点で消去する
-// 　：一回resultをquestion_idを小さい順にソートしておく。（その時にソートするアルゴリズムを作る懸念点がある）
+// 　：一回resultをquestion_idを小さい順にソートしておく。
 // 　　次にresultのquestion_idの最初の要素から「外れている」配列要素の番号を探す。
 // 　　その番号から前の配列要素を変数filterRecordに加える。加えたresultの配列要素はその時点で消去する。
