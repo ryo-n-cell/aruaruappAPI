@@ -4,10 +4,10 @@ const pool = require("../dbController/pool");
 const returnQIdCalc = [];
 
 async function resultsSoFar(req, res) {
-  const qIdArray = req.query.qid;
+  const qIdArray = req.query.qId;
   pool.getConnection(function (err, connection) {
     pool.query(
-      `SELECT * FROM status_count WHERE question_id IN(
+      `SELECT * FROM status_counts WHERE question_id IN(
       ${qIdArray[0]},
       ${qIdArray[1]},
       ${qIdArray[2]},
@@ -40,7 +40,6 @@ async function resultsSoFar(req, res) {
         // question_idsArrayはquestionIDのみを入れた配列
         for (let qId_i = 0; qId_i <= 9; qId_i++) {
           qid_length = question_idsArray.lastIndexOf(Number(qIdArray[qId_i]));
-          console.log(qid_length);
           let arrayById = [];
           for (
             let qid_length_n = 0;
@@ -55,6 +54,15 @@ async function resultsSoFar(req, res) {
         }
         // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
         // qid配列ごとにtrue/qidごとの配列の母数とBoolean
+        untilResultArray.forEach(resultArray => {
+          let questionParameter = resultArray.length
+          console.log(resultArray.length)
+          const trueCount = resultArray.filter(resultArray => resultArray.status === 1);
+          console.log(trueCount.length)
+          // if(trueCount === 0)
+          resultRatio = Math.floor(trueCount.length/questionParameter  * 100 )/10
+          console.log(resultRatio)
+        });
         connection.release();
         return res.send(untilResultArray);
       }
