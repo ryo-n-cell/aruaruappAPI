@@ -4,10 +4,10 @@ const pool = require("../dbController/pool");
 const returnQIdCalc = [];
 
 async function resultsSoFar(req, res) {
-  const qIdArray = req.query.qid;
+  const qIdArray = req.query.qId;
   pool.getConnection(function (err, connection) {
     pool.query(
-      `SELECT * FROM status_count WHERE question_id IN(
+      `SELECT * FROM status_counts WHERE question_id IN(
       ${qIdArray[0]},
       ${qIdArray[1]},
       ${qIdArray[2]},
@@ -31,16 +31,18 @@ async function resultsSoFar(req, res) {
           return 0;
         });
         // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-        const question_idsArray = [];
+        const questionIdsArray = [];
         dbData.forEach((dbData) => {
-          question_idsArray.push(dbData.question_id);
+          questionIdsArray.push(dbData.question_id);
         });
         const untilResultArray = [];
         // ソートした配列をquestionIDごとの配列としてまとめてuntilResultArrayへ代入する
-        // question_idsArrayはquestionIDのみを入れた配列
+        // questionIdsArrayはquestionIDのみを入れた配列
         for (let qId_i = 0; qId_i <= 9; qId_i++) {
-          qid_length = question_idsArray.lastIndexOf(Number(qIdArray[qId_i]));
-          console.log(qid_length);
+          // console.log(questionIdsArray);
+          qid_length = questionIdsArray.lastIndexOf(
+            Number(questionIdsArray[qId_i])
+          );
           let arrayById = [];
           for (
             let qid_length_n = 0;
@@ -50,13 +52,36 @@ async function resultsSoFar(req, res) {
             arrayById.push(dbData[qid_length_n]);
           }
           untilResultArray.push(arrayById);
-          question_idsArray.splice(0, qid_length + 1);
+          questionIdsArray.splice(0, qid_length + 1);
           dbData.splice(0, qid_length + 1);
         }
         // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-        // qid配列ごとにtrue/qidごとの配列の母数とBoolean
+        resultRatios = [];
+        untilResultArray.forEach((resultArray) => {
+          let questionParameter = resultArray.length;
+          const trueCount = resultArray.filter(
+            (resultArray) => resultArray.status === 1
+          );
+          resultRatio = Math.floor(
+            (trueCount.length / questionParameter) * 100
+          );
+          resultRatios.push(resultRatio);
+        });
+        reqJson = [
+          { id: `${qIdArray[0]}`, resultRatio: `${resultRatios[0]}` },
+          { id: `${qIdArray[1]}`, resultRatio: `${resultRatios[1]}` },
+          { id: `${qIdArray[2]}`, resultRatio: `${resultRatios[2]}` },
+          { id: `${qIdArray[3]}`, resultRatio: `${resultRatios[3]}` },
+          { id: `${qIdArray[4]}`, resultRatio: `${resultRatios[4]}` },
+          { id: `${qIdArray[5]}`, resultRatio: `${resultRatios[5]}` },
+          { id: `${qIdArray[6]}`, resultRatio: `${resultRatios[6]}` },
+          { id: `${qIdArray[7]}`, resultRatio: `${resultRatios[7]}` },
+          { id: `${qIdArray[8]}`, resultRatio: `${resultRatios[8]}` },
+          { id: `${qIdArray[9]}`, resultRatio: `${resultRatios[9]}` },
+        ];
+        // console.log(reqJson);
         connection.release();
-        return res.send(untilResultArray);
+        return res.send(reqJson);
       }
     );
   });
