@@ -59,8 +59,7 @@ async function resultsSoFar(req, res) {
           console.log(resultArray.length)
           const trueCount = resultArray.filter(resultArray => resultArray.status === 1);
           console.log(trueCount.length)
-          // if(trueCount === 0)
-          resultRatio = Math.floor(trueCount.length/questionParameter  * 100 )/10
+          resultRatio = Math.floor(trueCount.length / questionParameter * 100 )/10
           console.log(resultRatio)
         });
         connection.release();
