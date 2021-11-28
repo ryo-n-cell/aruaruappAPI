@@ -3,7 +3,8 @@ const mysql = require("mysql2");
 const pool = require("../dbController/pool");
 const reqJson = [];
 
-async function resultsSoFar(req, res) {
+function resultsSoFar(req, res) {
+  reqJson = [];
   const qIdArray = req.query.qId;
   pool.getConnection(function (err, connection) {
     pool.query(
@@ -45,7 +46,6 @@ async function resultsSoFar(req, res) {
             trueRatio: resultRatio,
           });
         });
-        console.log(reqJson);
         connection.release();
         return res.send(reqJson);
       }
