@@ -1,10 +1,9 @@
 const res = require("../app");
 const mysql = require("mysql2");
 const pool = require("../dbController/pool");
-const reqJson = [];
 
-function resultsSoFar(req, res) {
-  reqJson = [];
+async function resultsSoFar(req, res) {
+  let reqJson = [];
   const qIdArray = req.query.qId;
   pool.getConnection(function (err, connection) {
     pool.query(
