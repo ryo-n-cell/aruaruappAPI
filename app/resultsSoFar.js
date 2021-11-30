@@ -7,7 +7,7 @@ async function resultsSoFar(req, res) {
   const qIdArray = req.query.qId;
   pool.getConnection(function (err, connection) {
     pool.query(
-      `SELECT * FROM status_counts WHERE questions_id IN(
+      `SELECT * FROM status_counts WHERE question_id IN(
       ${qIdArray[0]},
       ${qIdArray[1]},
       ${qIdArray[2]},
